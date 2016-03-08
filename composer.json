@@ -1,0 +1,11 @@
+{
+    "name": "mikk150/yii2-dateinterval-validator",
+    "requires" :{
+        "yiisoft/yii2": ">=2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "mikk150\\validators\\": ""
+        }
+    }
+}
