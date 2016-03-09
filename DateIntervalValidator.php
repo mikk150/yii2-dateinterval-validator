@@ -3,7 +3,10 @@
 namespace mikk150\validators;
 
 use yii\validators\Validator;
+use IntlDateFormatter;
+use yii\helpers\FormatConverter;
 use DateInterval;
+use DateTime;
 use Yii;
 
 /**
@@ -86,6 +89,27 @@ class DateIntervalValidator extends Validator
      * @since 2.0.4
      */
     public $tooSmall;
+    /**
+     * @var string user friendly value of upper limit to display in the error message.
+     * If this property is null, the value of [[max]] will be used (before parsing).
+     * @since 2.0.4
+     */
+    public $maxString;
+    /**
+     * @var string user friendly value of lower limit to display in the error message.
+     * If this property is null, the value of [[min]] will be used (before parsing).
+     * @since 2.0.4
+     */
+    public $minString;
+    /**
+     * @var array map of short format names to IntlDateFormatter constant values.
+     */
+    private $_dateFormats = [
+        'short'  => 3, // IntlDateFormatter::SHORT,
+        'medium' => 2, // IntlDateFormatter::MEDIUM,
+        'long'   => 1, // IntlDateFormatter::LONG,
+        'full'   => 0, // IntlDateFormatter::FULL,
+    ];
 
     /**
      * @inheritdoc
@@ -113,9 +137,11 @@ class DateIntervalValidator extends Validator
         }
         if ($this->min !== null && $this->tooSmall === null) {
             $this->tooSmall = Yii::t('yii', '{attribute} must be no less than {min}.');
+            $this->minString = '';
         }
         if ($this->max !== null && $this->tooBig === null) {
             $this->tooBig = Yii::t('yii', '{attribute} must be no greater than {max}.');
+            $this->maxString = '';
         }
     }
 
@@ -147,11 +173,12 @@ class DateIntervalValidator extends Validator
     protected function validateValue($value)
     {
         $timestamp = $this->parseDateValue($value);
+        var_dump($value);
         if ($timestamp === false) {
             return [$this->message, []];
-        } elseif ($this->min !== null && $timestamp < (new DateTime())->sub($this->min)) {
+        } elseif ($this->min !== null && $timestamp < (new DateTime())->sub($this->min)->getTimestamp()) {
             return [$this->tooSmall, ['min' => $this->minString]];
-        } elseif ($this->max !== null && $timestamp > (new DateTime())->sub($this->max)) {
+        } elseif ($this->max !== null && $timestamp > (new DateTime())->sub($this->max)->getTimestamp()) {
             return [$this->tooBig, ['max' => $this->maxString]];
         } else {
             return null;
