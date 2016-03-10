@@ -173,7 +173,6 @@ class DateIntervalValidator extends Validator
     protected function validateValue($value)
     {
         $timestamp = $this->parseDateValue($value);
-        var_dump($value);
         if ($timestamp === false) {
             return [$this->message, []];
         } elseif ($this->min !== null && $timestamp < (new DateTime())->sub($this->min)->getTimestamp()) {
